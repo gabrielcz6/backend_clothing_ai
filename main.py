@@ -18,7 +18,7 @@ async def crear_avatar(
         return Response(content=avatar_bytes, media_type="image/png")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+#
 @app.post("/agregar-accesorios")
 async def agregar_accesorios(
     avatar_base: UploadFile = File(...),
