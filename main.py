@@ -5,10 +5,14 @@ import typing
 app = FastAPI(title="Avatar Fal.ai API")
 fal_service = FalService()
 
-# RUTA NUEVA PARA EL HEALTH CHECK
+# Health check endpoint para DigitalOcean
 @app.get("/")
 async def root():
     return {"status": "online", "message": "Backend Clothing AI is running"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
 
 @app.post("/crear-avatar")
 async def crear_avatar(
