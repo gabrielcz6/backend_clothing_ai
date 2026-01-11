@@ -4,8 +4,11 @@ import base64
 
 class FalService:
     def __init__(self):
-        # La API Key se tomará de la variable de entorno FAL_KEY
-        pass
+        # Configurar la API Key desde variable de entorno
+        fal_key = os.getenv("FAL_KEY")
+        if not fal_key:
+            raise ValueError("FAL_KEY no encontrada en variables de entorno")
+        os.environ["FAL_KEY"] = fal_key
 
     def _bytes_to_data_uri(self, image_bytes: bytes, mime_type: str = "image/png"):
         base64_encoded = base64.b64encode(image_bytes).decode("utf-8")
@@ -26,22 +29,18 @@ class FalService:
             }
         )
         result = await handler.get()
-        return result['image']['url'] # Fal devuelve una URL pública de la imagen
+        return result['image']['url']
 
     async def modify_avatar_with_accessories(self, avatar_uri: str, accessories_bytes: list[bytes]):
         """
         Usa Image-to-Image para mezclar el avatar base con nuevos elementos.
         """
-        # Aquí, para simplificar, describimos los accesorios en el prompt 
-        # ya que mezclar 4 imágenes requiere un modelo de Inpainting o ControlNet complejo.
-        # Usaremos Flux Image-to-Image que es muy potente.
-        
         handler = await fal_client.submit_async(
             "fal-ai/flux/dev/image-to-image",
             arguments={
                 "image_url": avatar_uri,
                 "prompt": "Highly detailed modification. Add the accessories provided in the context. Keep the face identical.",
-                "strength": 0.45, # Mantener la estructura original del avatar
+                "strength": 0.45,
             }
         )
         result = await handler.get()
