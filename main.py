@@ -5,6 +5,11 @@ import typing
 app = FastAPI(title="Avatar Fal.ai API")
 fal_service = FalService()
 
+# RUTA NUEVA PARA EL HEALTH CHECK
+@app.get("/")
+async def root():
+    return {"status": "online", "message": "Backend Clothing AI is running"}
+
 @app.post("/crear-avatar")
 async def crear_avatar(
     foto_rostro: UploadFile = File(...),
@@ -19,7 +24,7 @@ async def crear_avatar(
 
 @app.post("/agregar-accesorios")
 async def agregar_accesorios(
-    avatar_url: str = Form(...), # Recibe la URL que devolvió el primer paso
+    avatar_url: str = Form(...),
     accesorio1: UploadFile = File(...),
     accesorio2: typing.Optional[UploadFile] = File(None),
     accesorio3: typing.Optional[UploadFile] = File(None)
@@ -30,8 +35,6 @@ async def agregar_accesorios(
             if acc:
                 acc_list.append(await acc.read())
         
-        # Nota: En una implementación real, procesaríamos las imágenes de accesorios 
-        # para extraer sus características visuales.
         nueva_url = await fal_service.modify_avatar_with_accessories(avatar_url, acc_list)
         return {"avatar_modificado_url": nueva_url}
     except Exception as e:
